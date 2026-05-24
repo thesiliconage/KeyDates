@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'">
     <title>KeyDates</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
@@ -11,8 +13,8 @@
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
+            background: #faf9f7;
+            color: #2c2c2e;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
@@ -20,87 +22,144 @@
         .bg {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
             background:
-                radial-gradient(ellipse 60% 40% at 30% -5%, rgba(255,59,48,0.05) 0%, transparent 60%),
-                radial-gradient(ellipse 50% 35% at 80% 105%, rgba(88,86,214,0.04) 0%, transparent 50%);
+                radial-gradient(ellipse 50% 35% at 25% 0%, rgba(255,149,0,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 75% 100%, rgba(255,55,95,0.04) 0%, transparent 50%);
         }
 
-        .shell { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
+        .shell { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 56px 24px 64px; }
 
-        .topbar {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 40px;
+        /* ── Header ── */
+        .header { text-align: center; margin-bottom: 48px; }
+        .header-icon { font-size: 28px; margin-bottom: 12px; opacity: 0.9; }
+        .header-title {
+            font-size: 13px; font-weight: 600; letter-spacing: 4px;
+            text-transform: uppercase; color: #c47a3a;
         }
-        .brand { font-size: 11px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: #ff3b30; }
-        .brand-sub { font-size: 10px; color: #86868b; margin-top: 2px; letter-spacing: 1px; }
-        .topbar-right { text-align: right; }
-        .topbar-date { font-size: 11px; color: #86868b; }
-        .topbar-day { font-size: 28px; font-weight: 200; color: #1d1d1f; line-height: 1; }
+        .header-sub {
+            font-size: 11px; color: #8e8e93; margin-top: 4px; letter-spacing: 1px;
+        }
+        .header-date {
+            font-size: 12px; color: #aeaeb2; margin-top: 14px;
+            font-variant-numeric: tabular-nums;
+        }
 
         /* ── Cards ── */
-        .cards { display: flex; flex-direction: column; gap: 12px; }
+        .cards { display: flex; flex-direction: column; gap: 10px; }
 
         .card {
             background: #fff;
-            border-radius: 14px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.04);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: 16px;
+            padding: 20px 22px;
+            display: flex; align-items: center; gap: 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
             cursor: default;
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fi .5s ease-out forwards;
+            opacity: 0; transform: translateY(12px);
+            animation: cardIn .6s ease-out forwards;
+            position: relative;
+            overflow: hidden;
         }
-        .card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
-        .card:nth-child(1) { animation-delay: .05s }
-        .card:nth-child(2) { animation-delay: .1s }
-        .card:nth-child(3) { animation-delay: .15s }
-        .card:nth-child(4) { animation-delay: .2s }
+        .card::after {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            border-radius: 16px 16px 0 0;
+            opacity: 0.6;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.04); }
+        .card:nth-child(1) { animation-delay: .08s }
+        .card:nth-child(2) { animation-delay: .16s }
+        .card:nth-child(3) { animation-delay: .24s }
+        .card:nth-child(4) { animation-delay: .32s }
 
-        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
+        .card.coral::after  { background: linear-gradient(90deg, #ff6b6b, #ff8e8e); }
+        .card.lavender::after { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
+        .card.amber::after  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .card.sage::after   { background: linear-gradient(90deg, #6ee7b7, #a7f3d0); }
 
-        /* ── Date Badge ── */
-        .badge {
-            width: 52px; height: 52px; border-radius: 12px;
+        @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Date Circle ── */
+        .date-circle {
+            width: 54px; height: 54px; border-radius: 50%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            flex-shrink: 0;
+            flex-shrink: 0; position: relative;
         }
-        .badge-month { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; }
-        .badge-day { font-size: 20px; font-weight: 600; line-height: 1; margin-top: 1px; }
+        .date-circle::before {
+            content: ''; position: absolute; inset: -3px;
+            border-radius: 50%; opacity: 0.12;
+        }
 
-        .badge.red    { background: #fff0f0; color: #ff3b30; }
-        .badge.purple  { background: #f3f0ff; color: #5856d6; }
-        .badge.orange { background: #fff5eb; color: #ff9500; }
-        .badge.green  { background: #edfff5; color: #34c759; }
+        .coral .date-circle   { background: #fff0f0; }
+        .coral .date-circle::before { border: 2px solid #ff6b6b; }
+        .lavender .date-circle { background: #f5f3ff; }
+        .lavender .date-circle::before { border: 2px solid #a78bfa; }
+        .amber .date-circle   { background: #fffbeb; }
+        .amber .date-circle::before { border: 2px solid #f59e0b; }
+        .sage .date-circle    { background: #ecfdf5; }
+        .sage .date-circle::before { border: 2px solid #6ee7b7; }
+
+        .dc-month { font-size: 8px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+        .dc-day { font-size: 18px; font-weight: 600; line-height: 1; margin-top: 0px; }
+
+        .coral .dc-month   { color: #e04848; }
+        .coral .dc-day     { color: #d63031; }
+        .lavender .dc-month { color: #7c3aed; }
+        .lavender .dc-day   { color: #6d28d9; }
+        .amber .dc-month   { color: #d97706; }
+        .amber .dc-day     { color: #b45309; }
+        .sage .dc-month    { color: #059669; }
+        .sage .dc-day      { color: #047857; }
 
         /* ── Info ── */
         .info { flex: 1; min-width: 0; }
-        .info-title { font-size: 15px; font-weight: 500; color: #1d1d1f; }
-        .info-sub { font-size: 12px; color: #86868b; margin-top: 2px; }
+        .info-title { font-size: 15px; font-weight: 500; color: #1c1c1e; }
+        .info-sub { font-size: 11px; color: #8e8e93; margin-top: 2px; }
 
-        /* ── Status ── */
-        .status { text-align: right; flex-shrink: 0; }
-        .status-num { font-size: 22px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
-        .status-num.upcoming { color: #ff9500; }
-        .status-num.passed   { color: #86868b; }
-        .status-num.today    { color: #34c759; }
-        .status-lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #86868b; margin-top: 3px; }
-        .status-lbl.today { color: #34c759; font-weight: 600; }
+        /* ── Countdown ── */
+        .countdown { text-align: right; flex-shrink: 0; }
+        .cd-num { font-size: 26px; font-weight: 200; font-variant-numeric: tabular-nums; line-height: 1; }
+        .cd-lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; }
+
+        .coral .cd-num   { color: #e04848; }
+        .coral .cd-lbl   { color: #e08080; }
+        .lavender .cd-num { color: #7c3aed; }
+        .lavender .cd-lbl { color: #a78bfa; }
+        .amber .cd-num   { color: #d97706; }
+        .amber .cd-lbl   { color: #fbbf24; }
+        .sage .cd-num    { color: #059669; }
+        .sage .cd-lbl    { color: #6ee7b7; }
+
+        /* ── Today ── */
+        .card.today-card {
+            border: 1.5px solid rgba(255,149,0,0.2);
+            background: linear-gradient(135deg, #fff 60%, #fff8f0);
+        }
+        .today-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 20px;
+            background: linear-gradient(135deg, #ff9500, #ff6b6b);
+            color: #fff; font-size: 10px; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+        .today-dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: #fff; animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
 
         /* ── Footer ── */
         .footer {
-            text-align: center; margin-top: 40px;
+            text-align: center; margin-top: 48px;
             font-size: 10px; color: #c7c7cc; letter-spacing: 2px; text-transform: uppercase;
         }
 
         @media (max-width: 540px) {
-            .card { padding: 16px 18px; gap: 14px; }
-            .badge { width: 44px; height: 44px; }
-            .badge-day { font-size: 17px; }
-            .status-num { font-size: 18px; }
+            .card { padding: 16px 16px; gap: 14px; }
+            .date-circle { width: 46px; height: 46px; }
+            .dc-day { font-size: 15px; }
+            .cd-num { font-size: 22px; }
+            .header { margin-bottom: 36px; }
         }
     </style>
 </head>
@@ -109,15 +168,11 @@
 <div class="bg"></div>
 
 <div class="shell">
-    <div class="topbar">
-        <div>
-            <div class="brand">KeyDates</div>
-            <div class="brand-sub">Important Dates</div>
-        </div>
-        <div class="topbar-right">
-            <div class="topbar-date" id="top-date">----/--/--</div>
-            <div class="topbar-day" id="top-day">---</div>
-        </div>
+    <div class="header">
+        <div class="header-icon">📌</div>
+        <div class="header-title">KeyDates</div>
+        <div class="header-sub">Days that matter</div>
+        <div class="header-date" id="header-date">----/--/-- ---</div>
     </div>
 
     <div class="cards" id="cards"></div>
@@ -127,15 +182,13 @@
 
 <script>
     const DATES = [
-        { month: 4, day: 16, title: '4 · 16', sub: 'April 16th',   color: 'red' },
-        { month: 6, day:  9, title: '6 · 9',  sub: 'June 9th',      color: 'purple' },
-        { month: 7, day:  7, title: '7 · 7',  sub: 'July 7th',      color: 'orange' },
-        { month: 10, day: 6, title: '10 · 6', sub: 'October 6th',   color: 'green' },
+        { month: 4,  day: 16, title: 'April 16',    emoji: '🌸', style: 'coral' },
+        { month: 6,  day:  9, title: 'June 9',       emoji: '💜', style: 'lavender' },
+        { month: 7,  day:  7, title: 'July 7',       emoji: '✨', style: 'amber' },
+        { month: 10, day:  6, title: 'October 6',    emoji: '🍂', style: 'sage' },
     ];
 
-    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     function daysUntil(m, d) {
         const now = new Date();
@@ -150,39 +203,33 @@
         const cards = document.getElementById('cards');
         cards.innerHTML = '';
 
-        document.getElementById('top-date').textContent =
-            now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0');
-        document.getElementById('top-day').textContent = DAYS[now.getDay()];
+        document.getElementById('header-date').textContent =
+            now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0') + '  ' + DAYS[now.getDay()];
 
         DATES.forEach(d => {
             const left = daysUntil(d.month, d.day);
             const isToday = left === 0;
 
-            let numClass, numVal, lbl;
-            if (isToday) {
-                numClass = 'today';
-                numVal = '✦';
-                lbl = 'today';
-            } else {
-                numClass = 'upcoming';
-                numVal = left;
-                lbl = 'days left';
-            }
-
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = 'card ' + d.style + (isToday ? ' today-card' : '');
+
+            const cdNum = isToday ? '✦' : left;
+            const cdLbl = isToday ? 'today' : 'days left';
+            const cdExtra = isToday ? '<div style="margin-top:6px"><span class="today-badge"><span class="today-dot"></span>Today</span></div>' : '';
+
             card.innerHTML = `
-                <div class="badge ${d.color}">
-                    <div class="badge-month">${MONTHS[d.month - 1]}</div>
-                    <div class="badge-day">${d.day}</div>
+                <div class="date-circle">
+                    <div class="dc-month">${d.emoji}</div>
+                    <div class="dc-day">${d.day}</div>
                 </div>
                 <div class="info">
                     <div class="info-title">${d.title}</div>
-                    <div class="info-sub">${d.sub}</div>
+                    <div class="info-sub">${d.emoji} ${isToday ? 'Have a wonderful day!' : 'Mark your calendar'}</div>
                 </div>
-                <div class="status">
-                    <div class="status-num ${numClass}">${numVal}</div>
-                    <div class="status-lbl ${isToday ? 'today' : ''}">${lbl}</div>
+                <div class="countdown">
+                    <div class="cd-num">${cdNum}</div>
+                    <div class="cd-lbl">${cdLbl}</div>
+                    ${cdExtra}
                 </div>
             `;
             cards.appendChild(card);
