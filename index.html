@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyDates</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 40% at 30% -5%, rgba(255,59,48,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 35% at 80% 105%, rgba(88,86,214,0.04) 0%, transparent 50%);
+        }
+
+        .shell { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 48px 24px 64px; }
+
+        .topbar {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 40px;
+        }
+        .brand { font-size: 11px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: #ff3b30; }
+        .brand-sub { font-size: 10px; color: #86868b; margin-top: 2px; letter-spacing: 1px; }
+        .topbar-right { text-align: right; }
+        .topbar-date { font-size: 11px; color: #86868b; }
+        .topbar-day { font-size: 28px; font-weight: 200; color: #1d1d1f; line-height: 1; }
+
+        /* ── Cards ── */
+        .cards { display: flex; flex-direction: column; gap: 12px; }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: default;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fi .5s ease-out forwards;
+        }
+        .card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
+        .card:nth-child(1) { animation-delay: .05s }
+        .card:nth-child(2) { animation-delay: .1s }
+        .card:nth-child(3) { animation-delay: .15s }
+        .card:nth-child(4) { animation-delay: .2s }
+
+        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Date Badge ── */
+        .badge {
+            width: 52px; height: 52px; border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .badge-month { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; }
+        .badge-day { font-size: 20px; font-weight: 600; line-height: 1; margin-top: 1px; }
+
+        .badge.red    { background: #fff0f0; color: #ff3b30; }
+        .badge.purple  { background: #f3f0ff; color: #5856d6; }
+        .badge.orange { background: #fff5eb; color: #ff9500; }
+        .badge.green  { background: #edfff5; color: #34c759; }
+
+        /* ── Info ── */
+        .info { flex: 1; min-width: 0; }
+        .info-title { font-size: 15px; font-weight: 500; color: #1d1d1f; }
+        .info-sub { font-size: 12px; color: #86868b; margin-top: 2px; }
+
+        /* ── Status ── */
+        .status { text-align: right; flex-shrink: 0; }
+        .status-num { font-size: 22px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+        .status-num.upcoming { color: #ff9500; }
+        .status-num.passed   { color: #86868b; }
+        .status-num.today    { color: #34c759; }
+        .status-lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #86868b; margin-top: 3px; }
+        .status-lbl.today { color: #34c759; font-weight: 600; }
+
+        /* ── Footer ── */
+        .footer {
+            text-align: center; margin-top: 40px;
+            font-size: 10px; color: #c7c7cc; letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        @media (max-width: 540px) {
+            .card { padding: 16px 18px; gap: 14px; }
+            .badge { width: 44px; height: 44px; }
+            .badge-day { font-size: 17px; }
+            .status-num { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="shell">
+    <div class="topbar">
+        <div>
+            <div class="brand">KeyDates</div>
+            <div class="brand-sub">Important Dates</div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-date" id="top-date">----/--/--</div>
+            <div class="topbar-day" id="top-day">---</div>
+        </div>
+    </div>
+
+    <div class="cards" id="cards"></div>
+
+    <div class="footer">KeyDates</div>
+</div>
+
+<script>
+    const DATES = [
+        { month: 4, day: 16, title: '4 · 16', sub: 'April 16th',   color: 'red' },
+        { month: 6, day:  9, title: '6 · 9',  sub: 'June 9th',      color: 'purple' },
+        { month: 7, day:  7, title: '7 · 7',  sub: 'July 7th',      color: 'orange' },
+        { month: 10, day: 6, title: '10 · 6', sub: 'October 6th',   color: 'green' },
+    ];
+
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function daysUntil(m, d) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        let target = new Date(now.getFullYear(), m - 1, d);
+        if (target < today) target = new Date(now.getFullYear() + 1, m - 1, d);
+        return Math.round((target - today) / 86400000);
+    }
+
+    function daysSinceThisYear(m, d) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const target = new Date(now.getFullYear(), m - 1, d);
+        if (target > today) return null;
+        return Math.round((today - target) / 86400000);
+    }
+
+    function render() {
+        const now = new Date();
+        const cards = document.getElementById('cards');
+        cards.innerHTML = '';
+
+        document.getElementById('top-date').textContent =
+            now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0');
+        document.getElementById('top-day').textContent = DAYS[now.getDay()];
+
+        DATES.forEach(d => {
+            const left = daysUntil(d.month, d.day);
+            const passed = daysSinceThisYear(d.month, d.day);
+            const isToday = left === 0;
+
+            let numClass, numVal, lbl;
+            if (isToday) {
+                numClass = 'today';
+                numVal = '✦';
+                lbl = 'today';
+            } else if (passed !== null && passed > 0) {
+                numClass = 'passed';
+                numVal = passed;
+                lbl = 'days ago';
+            } else {
+                numClass = 'upcoming';
+                numVal = left;
+                lbl = 'days left';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="badge ${d.color}">
+                    <div class="badge-month">${MONTHS[d.month - 1]}</div>
+                    <div class="badge-day">${d.day}</div>
+                </div>
+                <div class="info">
+                    <div class="info-title">${d.title}</div>
+                    <div class="info-sub">${d.sub}</div>
+                </div>
+                <div class="status">
+                    <div class="status-num ${numClass}">${numVal}</div>
+                    <div class="status-lbl ${isToday ? 'today' : ''}">${lbl}</div>
+                </div>
+            `;
+            cards.appendChild(card);
+        });
+    }
+
+    render();
+    setInterval(render, 60000);
+</script>
+
+</body>
+</html>
