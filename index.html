@@ -141,16 +141,8 @@
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         let target = new Date(now.getFullYear(), m - 1, d);
-        if (target < today) target = new Date(now.getFullYear() + 1, m - 1, d);
+        if (target <= today) target = new Date(now.getFullYear() + 1, m - 1, d);
         return Math.round((target - today) / 86400000);
-    }
-
-    function daysSinceThisYear(m, d) {
-        const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const target = new Date(now.getFullYear(), m - 1, d);
-        if (target > today) return null;
-        return Math.round((today - target) / 86400000);
     }
 
     function render() {
@@ -164,7 +156,6 @@
 
         DATES.forEach(d => {
             const left = daysUntil(d.month, d.day);
-            const passed = daysSinceThisYear(d.month, d.day);
             const isToday = left === 0;
 
             let numClass, numVal, lbl;
@@ -172,10 +163,6 @@
                 numClass = 'today';
                 numVal = '✦';
                 lbl = 'today';
-            } else if (passed !== null && passed > 0) {
-                numClass = 'passed';
-                numVal = passed;
-                lbl = 'days ago';
             } else {
                 numClass = 'upcoming';
                 numVal = left;
