@@ -29,30 +29,26 @@
         .card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 14px 0 0 14px; opacity: 0.7; }
         .card:hover { transform: translateX(-2px) translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.04); }
         .card:nth-child(1) { animation-delay: .1s } .card:nth-child(2) { animation-delay: .18s } .card:nth-child(3) { animation-delay: .26s } .card:nth-child(4) { animation-delay: .34s }
-        .card.coral::after { background: linear-gradient(180deg, #ff6b6b, #ff8e8e); }
-        .card.lavender::after { background: linear-gradient(180deg, #a78bfa, #c4b5fd); }
-        .card.amber::after { background: linear-gradient(180deg, #f59e0b, #fbbf24); }
-        .card.sage::after { background: linear-gradient(180deg, #6ee7b7, #a7f3d0); }
+        .card.s0::after { background: linear-gradient(180deg, #ff6b6b, #ff8e8e); } .card.s1::after { background: linear-gradient(180deg, #a78bfa, #c4b5fd); }
+        .card.s2::after { background: linear-gradient(180deg, #f59e0b, #fbbf24); } .card.s3::after { background: linear-gradient(180deg, #6ee7b7, #a7f3d0); }
+        .card.s4::after { background: linear-gradient(180deg, #ec4899, #f472b6); } .card.s5::after { background: linear-gradient(180deg, #06b6d4, #67e8f9); }
         @keyframes cardIn { to { opacity: 1; transform: translateX(0); } }
         .date-circle { width: 46px; height: 46px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; position: relative; }
         .date-circle::before { content: ''; position: absolute; inset: -2px; border-radius: 50%; opacity: 0.12; }
-        .coral .date-circle { background: #fff0f0; } .coral .date-circle::before { border: 2px solid #ff6b6b; }
-        .lavender .date-circle { background: #f5f3ff; } .lavender .date-circle::before { border: 2px solid #a78bfa; }
-        .amber .date-circle { background: #fffbeb; } .amber .date-circle::before { border: 2px solid #f59e0b; }
-        .sage .date-circle { background: #ecfdf5; } .sage .date-circle::before { border: 2px solid #6ee7b7; }
-        .dc-emoji { font-size: 12px; line-height: 1; }
-        .dc-day { font-size: 16px; font-weight: 600; line-height: 1; margin-top: 1px; }
-        .coral .dc-day { color: #d63031; } .lavender .dc-day { color: #6d28d9; } .amber .dc-day { color: #b45309; } .sage .dc-day { color: #047857; }
-        .info { flex: 1; min-width: 0; }
-        .info-title { font-size: 13px; font-weight: 500; color: #1c1c1e; }
-        .info-sub { font-size: 10px; color: #8e8e93; margin-top: 2px; }
+        .s0 .date-circle { background: #fff0f0; } .s0 .date-circle::before { border: 2px solid #ff6b6b; } .s0 .dc-day { color: #d63031; }
+        .s1 .date-circle { background: #f5f3ff; } .s1 .date-circle::before { border: 2px solid #a78bfa; } .s1 .dc-day { color: #6d28d9; }
+        .s2 .date-circle { background: #fffbeb; } .s2 .date-circle::before { border: 2px solid #f59e0b; } .s2 .dc-day { color: #b45309; }
+        .s3 .date-circle { background: #ecfdf5; } .s3 .date-circle::before { border: 2px solid #6ee7b7; } .s3 .dc-day { color: #047857; }
+        .s4 .date-circle { background: #fdf2f8; } .s4 .date-circle::before { border: 2px solid #ec4899; } .s4 .dc-day { color: #be185d; }
+        .s5 .date-circle { background: #ecfeff; } .s5 .date-circle::before { border: 2px solid #06b6d4; } .s5 .dc-day { color: #0e7490; }
+        .dc-emoji { font-size: 12px; line-height: 1; } .dc-day { font-size: 16px; font-weight: 600; line-height: 1; margin-top: 1px; }
+        .info { flex: 1; min-width: 0; } .info-title { font-size: 13px; font-weight: 500; color: #1c1c1e; } .info-sub { font-size: 10px; color: #8e8e93; margin-top: 2px; }
         .countdown { text-align: right; flex-shrink: 0; }
         .cd-num { font-size: 22px; font-weight: 200; font-variant-numeric: tabular-nums; line-height: 1; }
         .cd-lbl { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; }
-        .coral .cd-num { color: #e04848; } .coral .cd-lbl { color: #e08080; }
-        .lavender .cd-num { color: #7c3aed; } .lavender .cd-lbl { color: #a78bfa; }
-        .amber .cd-num { color: #d97706; } .amber .cd-lbl { color: #fbbf24; }
-        .sage .cd-num { color: #059669; } .sage .cd-lbl { color: #6ee7b7; }
+        .s0 .cd-num { color: #e04848; } .s0 .cd-lbl { color: #e08080; } .s1 .cd-num { color: #7c3aed; } .s1 .cd-lbl { color: #a78bfa; }
+        .s2 .cd-num { color: #d97706; } .s2 .cd-lbl { color: #fbbf24; } .s3 .cd-num { color: #059669; } .s3 .cd-lbl { color: #6ee7b7; }
+        .s4 .cd-num { color: #db2777; } .s4 .cd-lbl { color: #f472b6; } .s5 .cd-num { color: #0891b2; } .s5 .cd-lbl { color: #67e8f9; }
         .card.today-card { border: 1.5px solid rgba(255,149,0,0.2); background: linear-gradient(135deg, #fff 60%, #fff8f0); }
         .today-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 16px; background: linear-gradient(135deg, #ff9500, #ff6b6b); color: #fff; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
         .today-dot { width: 4px; height: 4px; border-radius: 50%; background: #fff; animation: pulse 1.5s ease-in-out infinite; }
@@ -66,10 +62,8 @@
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
         .cal-weekday { text-align: center; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #aeaeb2; padding: 6px 0; }
         .cal-day { text-align: center; padding: 7px 0; font-size: 13px; font-weight: 400; color: #3a3a3c; border-radius: 8px; cursor: pointer; transition: all 0.15s; position: relative; }
-        .cal-day:hover { background: #f5f5f7; }
-        .cal-day.empty { cursor: default; } .cal-day.empty:hover { background: none; }
-        .cal-day.today { background: linear-gradient(135deg, #ff9500, #ff6b6b); color: #fff; font-weight: 600; }
-        .cal-day.today:hover { opacity: 0.9; }
+        .cal-day:hover { background: #f5f5f7; } .cal-day.empty { cursor: default; } .cal-day.empty:hover { background: none; }
+        .cal-day.today { background: linear-gradient(135deg, #ff9500, #ff6b6b); color: #fff; font-weight: 600; } .cal-day.today:hover { opacity: 0.9; }
         .cal-day.selected { background: #1c1c1e; color: #fff; font-weight: 500; }
         .cal-day.keydate::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #c47a3a; }
         .cal-day.today.keydate::after { background: #fff; }
@@ -78,13 +72,18 @@
         .selected-info .si-date { font-weight: 500; color: #3a3a3c; font-size: 13px; }
         .selected-info .si-note { margin-top: 2px; color: #c47a3a; font-weight: 500; }
         .footer { text-align: center; margin-top: 40px; font-size: 10px; color: #c7c7cc; letter-spacing: 2px; text-transform: uppercase; }
+        .error { text-align: center; padding: 80px 24px; }
+        .error h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+        .error p { font-size: 13px; color: #86868b; margin-bottom: 20px; line-height: 1.7; }
+        .error a { color: #c47a3a; text-decoration: none; font-weight: 500; }
         @media (max-width: 720px) { .main-layout { grid-template-columns: 1fr; } .cards-col { flex-direction: row; overflow-x: auto; gap: 8px; padding-bottom: 4px; -webkit-overflow-scrolling: touch; } .card { min-width: 240px; flex-shrink: 0; } }
         @media (max-width: 480px) { .card { min-width: 220px; padding: 14px; gap: 10px; } .cd-num { font-size: 18px; } .tb-clock { font-size: 26px; } }
     </style>
 </head>
 <body>
 <div class="bg"></div>
-<div class="shell">
+
+<div class="shell" id="app" style="display:none">
     <div class="header">
         <div class="header-icon">📌</div>
         <div class="header-title">KeyDates</div>
@@ -112,57 +111,57 @@
     <div class="footer">KeyDates</div>
 </div>
 
+<div class="error" id="error">
+    <h2>No data found</h2>
+    <p>This page reads dates from the URL hash.<br>No data is stored in the page source.</p>
+    <p><a href="setup.html">→ Generate your private link</a></p>
+</div>
+
 <script>
 (function() {
     'use strict';
 
-    // ── Obfuscated key dates (Base64: month-day pairs) ──
-    function _kd(b) { var p = atob(b).split('-'); return { month: parseInt(p[0],10), day: parseInt(p[1],10) }; }
-    var _k = [
-        _kd('NC0xNg=='),  // 4-16
-        _kd('Ni05'),      // 6-9
-        _kd('Ny03'),      // 7-7
-        _kd('MTAtNg==')   // 10-6
-    ];
-    var STYLES = ['coral','lavender','amber','sage'];
-    var EMOJIS = ['🌸','💜','✨','🍂'];
-    var TITLES = ['April 16','June 9','July 7','October 6'];
-
-    // Build DATES array from obfuscated data
-    var DATES = _k.map(function(k, i) {
-        return { month: k.month, day: k.day, title: TITLES[i], emoji: EMOJIS[i], style: STYLES[i] };
-    });
-
-    var WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    var EMOJIS = ['🌸','💜','✨','🍂','🌺','🌊','🎂','🎄','🕊️','🌟','💫','🔥'];
     var WEEKDAYS_FULL = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    // Read config from URL hash
+    var hash = location.hash.slice(1);
+    var DATES = null;
+    try {
+        var raw = JSON.parse(atob(hash));
+        if (Array.isArray(raw) && raw.length > 0) {
+            DATES = raw.map(function(d, i) {
+                return { month: d.m, day: d.d, title: d.t || (d.m + '/' + d.d), emoji: EMOJIS[i % EMOJIS.length], style: 's' + (i % 6) };
+            });
+        }
+    } catch(e) {}
+
+    if (!DATES) {
+        document.getElementById('error').style.display = 'block';
+        return;
+    }
+
+    document.getElementById('error').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function isKeyDate(m, d) { return DATES.some(function(k) { return k.month === m && k.day === d; }); }
     function daysUntil(m, d) {
-        var now = new Date();
-        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var now = new Date(); var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         var target = new Date(now.getFullYear(), m - 1, d);
         if (target <= today) target = new Date(now.getFullYear() + 1, m - 1, d);
         return Math.round((target - today) / 86400000);
     }
     function mondayIndex(d) { return (d.getDay() + 6) % 7; }
 
-    // Cached DOM refs
-    var elClock = document.getElementById('clock');
-    var elYmd = document.getElementById('ymd');
-    var elWeekday = document.getElementById('weekday');
-    var elCards = document.getElementById('cards');
-    var elCalGrid = document.getElementById('cal-grid');
-    var elCalTitle = document.getElementById('cal-title');
-    var elSelectedInfo = document.getElementById('selected-info');
+    var elClock = document.getElementById('clock'), elYmd = document.getElementById('ymd'), elWeekday = document.getElementById('weekday');
+    var elCards = document.getElementById('cards'), elCalGrid = document.getElementById('cal-grid');
+    var elCalTitle = document.getElementById('cal-title'), elSelectedInfo = document.getElementById('selected-info');
 
-    // ── Time ──
     var timer = setInterval(updateTime, 1000);
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) { clearInterval(timer); timer = null; }
-        else { updateTime(); timer = setInterval(updateTime, 1000); }
-    });
+    document.addEventListener('visibilitychange', function() { if (document.hidden) { clearInterval(timer); timer = null; } else { updateTime(); timer = setInterval(updateTime, 1000); } });
     window.addEventListener('beforeunload', function() { clearInterval(timer); });
     updateTime();
 
@@ -173,7 +172,6 @@
         elWeekday.textContent = WEEKDAYS_FULL[now.getDay()];
     }
 
-    // ── Calendar (event delegation) ──
     var calYear, calMonth, selectedDate = null;
 
     elCalGrid.addEventListener('click', function(e) {
@@ -189,12 +187,7 @@
     function renderCalendar() {
         var frag = document.createDocumentFragment();
         elCalTitle.textContent = MONTHS[calMonth] + ' ' + calYear;
-
-        WEEKDAYS.forEach(function(w) {
-            var el = document.createElement('div');
-            el.className = 'cal-weekday'; el.textContent = w;
-            frag.appendChild(el);
-        });
+        WEEKDAYS.forEach(function(w) { var el = document.createElement('div'); el.className = 'cal-weekday'; el.textContent = w; frag.appendChild(el); });
 
         var firstDay = mondayIndex(new Date(calYear, calMonth, 1));
         var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
@@ -202,59 +195,34 @@
         var today = new Date();
         var todayStr = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate();
 
-        for (var i = firstDay - 1; i >= 0; i--) {
-            var el = document.createElement('div');
-            el.className = 'cal-day other-month empty'; el.textContent = daysInPrev - i;
-            frag.appendChild(el);
-        }
-
+        for (var i = firstDay - 1; i >= 0; i--) { var el = document.createElement('div'); el.className = 'cal-day other-month empty'; el.textContent = daysInPrev - i; frag.appendChild(el); }
         for (var d = 1; d <= daysInMonth; d++) {
-            var el = document.createElement('div');
-            el.className = 'cal-day'; el.textContent = d;
-            var m = calMonth + 1;
-            var dateStr = calYear + '-' + calMonth + '-' + d;
+            var el = document.createElement('div'); el.className = 'cal-day'; el.textContent = d;
+            var m = calMonth + 1; var dateStr = calYear + '-' + calMonth + '-' + d;
             if (dateStr === todayStr) el.classList.add('today');
             if (isKeyDate(m, d)) el.classList.add('keydate');
             if (selectedDate && selectedDate.year === calYear && selectedDate.month === calMonth && selectedDate.day === d) el.classList.add('selected');
             frag.appendChild(el);
         }
+        var totalCells = firstDay + daysInMonth; var remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+        for (var d = 1; d <= remaining; d++) { var el = document.createElement('div'); el.className = 'cal-day other-month empty'; el.textContent = d; frag.appendChild(el); }
 
-        var totalCells = firstDay + daysInMonth;
-        var remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-        for (var d = 1; d <= remaining; d++) {
-            var el = document.createElement('div');
-            el.className = 'cal-day other-month empty'; el.textContent = d;
-            frag.appendChild(el);
-        }
-
-        elCalGrid.innerHTML = '';
-        elCalGrid.appendChild(frag);
-
-        if (selectedDate) showSelectedInfo(selectedDate.month + 1, selectedDate.day);
-        else elSelectedInfo.innerHTML = '';
+        elCalGrid.innerHTML = ''; elCalGrid.appendChild(frag);
+        if (selectedDate) showSelectedInfo(selectedDate.month + 1, selectedDate.day); else elSelectedInfo.innerHTML = '';
     }
 
     function showSelectedInfo(m, d) {
+        elSelectedInfo.innerHTML = '';
         var kd = null;
         for (var i = 0; i < DATES.length; i++) { if (DATES[i].month === m && DATES[i].day === d) { kd = DATES[i]; break; } }
         if (kd) {
-            var left = daysUntil(m, d);
-            var isToday = left === 0;
-            // Build with DOM API (no innerHTML)
-            elSelectedInfo.innerHTML = '';
-            var div1 = document.createElement('div');
-            div1.className = 'si-date';
-            div1.textContent = kd.emoji + ' ' + kd.title;
-            var div2 = document.createElement('div');
-            div2.className = 'si-note';
-            div2.textContent = isToday ? '✦ Today!' : left + ' days until this day';
-            elSelectedInfo.appendChild(div1);
-            elSelectedInfo.appendChild(div2);
+            var left = daysUntil(m, d); var isToday = left === 0;
+            var div1 = document.createElement('div'); div1.className = 'si-date'; div1.textContent = kd.emoji + ' ' + kd.title;
+            var div2 = document.createElement('div'); div2.className = 'si-note'; div2.textContent = isToday ? '✦ Today!' : left + ' days until this day';
+            elSelectedInfo.appendChild(div1); elSelectedInfo.appendChild(div2);
         } else {
             var dt = new Date(selectedDate.year, selectedDate.month, selectedDate.day);
-            elSelectedInfo.innerHTML = '';
-            var div = document.createElement('div');
-            div.className = 'si-date';
+            var div = document.createElement('div'); div.className = 'si-date';
             div.textContent = MONTHS[selectedDate.month] + ' ' + selectedDate.day + ', ' + selectedDate.year + ' — ' + WEEKDAYS_FULL[dt.getDay()];
             elSelectedInfo.appendChild(div);
         }
@@ -263,61 +231,29 @@
     document.getElementById('cal-prev').addEventListener('click', function() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
     document.getElementById('cal-next').addEventListener('click', function() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
 
-    var now = new Date();
-    calYear = now.getFullYear(); calMonth = now.getMonth();
-    renderCalendar();
+    var now = new Date(); calYear = now.getFullYear(); calMonth = now.getMonth(); renderCalendar();
 
-    // ── Cards (DocumentFragment) ──
     function renderCards() {
         var frag = document.createDocumentFragment();
         DATES.forEach(function(d) {
-            var left = daysUntil(d.month, d.day);
-            var isToday = left === 0;
-            var card = document.createElement('div');
-            card.className = 'card ' + d.style + (isToday ? ' today-card' : '');
-
-            var circle = document.createElement('div');
-            circle.className = 'date-circle';
-            var emoji = document.createElement('div');
-            emoji.className = 'dc-emoji'; emoji.textContent = d.emoji;
-            var day = document.createElement('div');
-            day.className = 'dc-day'; day.textContent = d.day;
+            var left = daysUntil(d.month, d.day); var isToday = left === 0;
+            var card = document.createElement('div'); card.className = 'card ' + d.style + (isToday ? ' today-card' : '');
+            var circle = document.createElement('div'); circle.className = 'date-circle';
+            var emoji = document.createElement('div'); emoji.className = 'dc-emoji'; emoji.textContent = d.emoji;
+            var day = document.createElement('div'); day.className = 'dc-day'; day.textContent = d.day;
             circle.appendChild(emoji); circle.appendChild(day);
-
-            var info = document.createElement('div');
-            info.className = 'info';
-            var title = document.createElement('div');
-            title.className = 'info-title'; title.textContent = d.title;
-            var sub = document.createElement('div');
-            sub.className = 'info-sub'; sub.textContent = isToday ? 'Have a wonderful day!' : 'Mark your calendar';
+            var info = document.createElement('div'); info.className = 'info';
+            var title = document.createElement('div'); title.className = 'info-title'; title.textContent = d.title;
+            var sub = document.createElement('div'); sub.className = 'info-sub'; sub.textContent = isToday ? 'Have a wonderful day!' : 'Mark your calendar';
             info.appendChild(title); info.appendChild(sub);
-
-            var countdown = document.createElement('div');
-            countdown.className = 'countdown';
-            var cdNum = document.createElement('div');
-            cdNum.className = 'cd-num'; cdNum.textContent = isToday ? '✦' : left;
-            var cdLbl = document.createElement('div');
-            cdLbl.className = 'cd-lbl'; cdLbl.textContent = isToday ? 'today' : 'days left';
+            var countdown = document.createElement('div'); countdown.className = 'countdown';
+            var cdNum = document.createElement('div'); cdNum.className = 'cd-num'; cdNum.textContent = isToday ? '✦' : left;
+            var cdLbl = document.createElement('div'); cdLbl.className = 'cd-lbl'; cdLbl.textContent = isToday ? 'today' : 'days left';
             countdown.appendChild(cdNum); countdown.appendChild(cdLbl);
-
-            if (isToday) {
-                var badge = document.createElement('div');
-                badge.style.marginTop = '4px';
-                var span = document.createElement('span');
-                span.className = 'today-badge';
-                var dot = document.createElement('span');
-                dot.className = 'today-dot';
-                span.appendChild(dot);
-                span.appendChild(document.createTextNode('Today'));
-                badge.appendChild(span);
-                countdown.appendChild(badge);
-            }
-
-            card.appendChild(circle); card.appendChild(info); card.appendChild(countdown);
-            frag.appendChild(card);
+            if (isToday) { var badge = document.createElement('div'); badge.style.marginTop = '4px'; var span = document.createElement('span'); span.className = 'today-badge'; var dot = document.createElement('span'); dot.className = 'today-dot'; span.appendChild(dot); span.appendChild(document.createTextNode('Today')); badge.appendChild(span); countdown.appendChild(badge); }
+            card.appendChild(circle); card.appendChild(info); card.appendChild(countdown); frag.appendChild(card);
         });
-        elCards.innerHTML = '';
-        elCards.appendChild(frag);
+        elCards.innerHTML = ''; elCards.appendChild(frag);
     }
     renderCards();
     setInterval(renderCards, 60000);
