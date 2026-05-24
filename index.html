@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -253,7 +253,7 @@
         <div class="calendar-wrap">
             <div class="cal-header">
                 <button class="cal-nav" id="cal-prev">‹</button>
-                <div class="cal-month-year" id="cal-title">----年--月</div>
+                <div class="cal-month-year" id="cal-title"></div>
                 <button class="cal-nav" id="cal-next">›</button>
             </div>
             <div class="cal-grid" id="cal-grid"></div>
@@ -272,8 +272,8 @@
         { month: 10, day:  6, title: 'October 6',    emoji: '🍂', style: 'sage' },
     ];
 
-    const WEEKDAYS_ZH = ['日','一','二','三','四','五','六'];
-    const MONTHS_ZH = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+    const WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function isKeyDate(m, d) { return DATES.some(k => k.month === m && k.day === d); }
@@ -285,12 +285,16 @@
         return Math.round((target - today) / 86400000);
     }
 
+    // Monday-based: convert JS getDay() (0=Sun) to 0=Mon
+    function mondayIndex(d) { return (d.getDay() + 6) % 7; }
+
     // ── Time ──
     function updateTime() {
         const now = new Date();
         document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
         document.getElementById('ymd').textContent = now.getFullYear() + '/' + pad(now.getMonth()+1) + '/' + pad(now.getDate());
-        document.getElementById('weekday').textContent = '星期' + WEEKDAYS_ZH[now.getDay()];
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        document.getElementById('weekday').textContent = days[now.getDay()];
     }
     updateTime();
     setInterval(updateTime, 1000);
@@ -301,26 +305,28 @@
     function renderCalendar() {
         const grid = document.getElementById('cal-grid');
         grid.innerHTML = '';
-        document.getElementById('cal-title').textContent = calYear + '年 ' + MONTHS_ZH[calMonth];
+        document.getElementById('cal-title').textContent = MONTHS[calMonth] + ' ' + calYear;
 
-        ['日','一','二','三','四','五','六'].forEach(w => {
+        WEEKDAYS.forEach(w => {
             const el = document.createElement('div');
             el.className = 'cal-weekday'; el.textContent = w;
             grid.appendChild(el);
         });
 
-        const firstDay = new Date(calYear, calMonth, 1).getDay();
+        const firstDay = mondayIndex(new Date(calYear, calMonth, 1));
         const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
         const daysInPrev = new Date(calYear, calMonth, 0).getDate();
         const today = new Date();
         const todayStr = today.getFullYear() + '-' + today.getMonth() + '-' + today.getDate();
 
+        // Previous month fill
         for (let i = firstDay - 1; i >= 0; i--) {
             const el = document.createElement('div');
             el.className = 'cal-day other-month empty'; el.textContent = daysInPrev - i;
             grid.appendChild(el);
         }
 
+        // Current month
         for (let d = 1; d <= daysInMonth; d++) {
             const el = document.createElement('div');
             el.className = 'cal-day'; el.textContent = d;
@@ -333,6 +339,7 @@
             grid.appendChild(el);
         }
 
+        // Next month fill
         const totalCells = firstDay + daysInMonth;
         const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
         for (let d = 1; d <= remaining; d++) {
@@ -355,7 +362,8 @@
                 `<div class="si-note">${isToday ? '✦ Today!' : left + ' days until this day'}</div>`;
         } else {
             const dt = new Date(selectedDate.year, selectedDate.month, selectedDate.day);
-            info.innerHTML = `<div class="si-date">${selectedDate.year}/${pad(selectedDate.month+1)}/${pad(selectedDate.day)}  星期${WEEKDAYS_ZH[dt.getDay()]}</div>`;
+            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            info.innerHTML = `<div class="si-date">${MONTHS[selectedDate.month]} ${selectedDate.day}, ${selectedDate.year} &mdash; ${days[dt.getDay()]}</div>`;
         }
     }
 
