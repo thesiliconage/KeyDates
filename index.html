@@ -29,8 +29,7 @@
         .card::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 14px 0 0 14px; opacity: 0.7; }
         .card:hover { transform: translateX(-2px) translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.04); }
         .card:nth-child(1) { animation-delay: .1s } .card:nth-child(2) { animation-delay: .18s } .card:nth-child(3) { animation-delay: .26s } .card:nth-child(4) { animation-delay: .34s }
-        .card.coral::after { background: linear-gradient(180deg, #ff6b6b, #ff8e8e); }
-        .card.lavender::after { background: linear-gradient(180deg, #a78bfa, #c4b5fd); }
+                .card.lavender::after { background: linear-gradient(180deg, #a78bfa, #c4b5fd); }
         .card.amber::after { background: linear-gradient(180deg, #f59e0b, #fbbf24); }
         .card.sage::after { background: linear-gradient(180deg, #6ee7b7, #a7f3d0); }
         @keyframes cardIn { to { opacity: 1; transform: translateX(0); } }
@@ -40,7 +39,6 @@
         .lavender .date-circle { background: #f5f3ff; } .lavender .date-circle::before { border: 2px solid #a78bfa; }
         .amber .date-circle { background: #fffbeb; } .amber .date-circle::before { border: 2px solid #f59e0b; }
         .sage .date-circle { background: #ecfdf5; } .sage .date-circle::before { border: 2px solid #6ee7b7; }
-        .dc-emoji { font-size: 12px; line-height: 1; }
         .dc-day { font-size: 16px; font-weight: 600; line-height: 1; margin-top: 1px; }
         .coral .dc-day { color: #d63031; } .lavender .dc-day { color: #6d28d9; } .amber .dc-day { color: #b45309; } .sage .dc-day { color: #047857; }
         .info { flex: 1; min-width: 0; }
@@ -57,7 +55,7 @@
         .today-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 16px; background: linear-gradient(135deg, #ff9500, #ff6b6b); color: #fff; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
         .today-dot { width: 4px; height: 4px; border-radius: 50%; background: #fff; animation: pulse 1.5s ease-in-out infinite; }
         @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
-        .calendar-wrap { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); opacity: 0; transform: translateX(12px); animation: calIn .5s .2s ease-out forwards; }
+        .calendar-wrap { background: #fff; border-radius: 16px; padding: 20px; min-height: 380px; box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.03); opacity: 0; transform: translateX(12px); animation: calIn .5s .2s ease-out forwards; }
         @keyframes calIn { to { opacity: 1; transform: translateX(0); } }
         .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
         .cal-nav { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); background: #faf9f7; color: #3a3a3c; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s; }
@@ -86,8 +84,7 @@
 <div class="bg"></div>
 <div class="shell">
     <div class="header">
-        <div class="header-icon">📌</div>
-        <div class="header-title">KeyDates</div>
+                <div class="header-title">KeyDates</div>
         <div class="time-bar">
             <div class="tb-clock" id="clock">--:--:--</div>
             <div class="tb-divider"></div>
@@ -125,12 +122,11 @@
         _kd(10,6)   // 10-6
     ];
     var STYLES = ['coral','lavender','amber','sage'];
-    var EMOJIS = ['🌸','💜','✨','🍂'];
-    var TITLES = ['April 16','June 9','July 7','October 6'];
+        var TITLES = ['June 9','July 7','October 6'];
 
     // Build DATES array from obfuscated data
     var DATES = _k.map(function(k, i) {
-        return { month: k.month, day: k.day, title: TITLES[i], emoji: EMOJIS[i], style: STYLES[i] };
+        return { month: k.month, day: k.day, title: TITLES[i], style: STYLES[i] };
     });
 
     var WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -244,7 +240,7 @@
             elSelectedInfo.innerHTML = '';
             var div1 = document.createElement('div');
             div1.className = 'si-date';
-            div1.textContent = kd.emoji + ' ' + kd.title;
+            div1.textContent = kd.title;
             var div2 = document.createElement('div');
             div2.className = 'si-note';
             div2.textContent = isToday ? '✦ Today!' : left + ' days until this day';
@@ -278,18 +274,16 @@
 
             var circle = document.createElement('div');
             circle.className = 'date-circle';
-            var emoji = document.createElement('div');
-            emoji.className = 'dc-emoji'; emoji.textContent = d.emoji;
             var day = document.createElement('div');
             day.className = 'dc-day'; day.textContent = d.day;
-            circle.appendChild(emoji); circle.appendChild(day);
+            circle.appendChild(day);
 
             var info = document.createElement('div');
             info.className = 'info';
             var title = document.createElement('div');
             title.className = 'info-title'; title.textContent = d.title;
             var sub = document.createElement('div');
-            sub.className = 'info-sub'; sub.textContent = isToday ? 'Have a wonderful day!' : 'Mark your calendar';
+            sub.className = 'info-sub'; sub.textContent = isToday ? 'Have a wonderful day!' : '';
             info.appendChild(title); info.appendChild(sub);
 
             var countdown = document.createElement('div');
