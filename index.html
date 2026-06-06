@@ -163,10 +163,15 @@
     var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     var WEEKDAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
+    // ── Encoded dates (XOR + hex, auto-decoded at runtime) ──
+    function _xd(h,k){return h.match(/.{2}/g).map(function(x,i){return String.fromCharCode(parseInt(x,16)^k.charCodeAt(i%k.length))}).join('');}
+    var _K='SiliconAge2026';
+    var MONTHS_MAP={1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'};
+    function _decDate(enc){var s=_xd(enc,_K);var m=parseInt(s.substring(0,2),10);var d=parseInt(s.substring(2,4),10);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d};}
     var DATES = [
-        { month: 6,  day:  9, title: 'June 9',    style: 'lavender' },
-        { month: 7,  day:  7, title: 'July 7',    style: 'amber' },
-        { month: 10, day:  6, title: 'October 6', style: 'sage' }
+        Object.assign(_decDate('635f5c50'), {style:'lavender'}),
+        Object.assign(_decDate('635e5c5e'), {style:'amber'}),
+        Object.assign(_decDate('62595c5f'), {style:'sage'})
     ];
 
     function pad(n) { return String(n).padStart(2, '0'); }
