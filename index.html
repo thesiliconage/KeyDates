@@ -174,9 +174,9 @@
     function _n(a, b) { return a - b; }
     var MONTHS_MAP={1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'};
     var DATES = [
-        (function(){var m=_n(15,9),d=_n(21,12);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'lavender'}})(),
-        (function(){var m=_n(19,12),d=_n(25,18);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'amber'}})(),
-        (function(){var m=_s(4,6),d=_n(19,13);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'sage'}})()
+        (function(){var m=_n(18,12),d=_n(18,9);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'lavender'}})(),
+        (function(){var m=_n(16,9),d=_n(18,11);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'amber'}})(),
+        (function(){var m=_n(18,8),d=_n(18,12);return{month:m,day:d,title:MONTHS_MAP[m]+' '+d,style:'sage'}})()
     ];
 
     function pad(n) { return String(n).padStart(2, '0'); }
