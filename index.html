@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'">
-    <title>TimeTracer</title>
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=()">
+    <title>KeyDates</title>
     <style>
         /* Self-hosted fonts (no external requests) */
         @font-face{font-family:'Inter';font-style:normal;font-weight:200;font-display:swap;src:url(fonts/inter-200.woff2) format('woff2')}
@@ -20,401 +24,801 @@
     </style>
     <style>
         :root {
-            --bg: #f5f5f7; --card: #fff; --ink: #1d1d1f; --muted: #86868b;
-            --border: rgba(0,0,0,0.04); --accent: #0071e3; --accent2: #ff6b35;
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface2: #1a1a28;
+            --ink: #e4e4ed;
+            --muted: #6b6b80;
+            --border: rgba(255,255,255,0.06);
+            --accent: #7c5cfc;
+            --accent2: #f472b6;
+            --accent3: #38bdf8;
+            --danger: #ef4444;
+            --success: #22c55e;
             --mono: 'JetBrains Mono', monospace;
+            --radius: 10px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
 
-        .top-bar { position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 100; background: rgba(0,0,0,0.03); }
-        .top-bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, #0071e3, #34c759, #ff9500, #ff3b30); background-size: 300% 100%; animation: shimmer 3s linear infinite; transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
-        @keyframes shimmer { 0% { background-position: 0% 0 } 100% { background-position: 300% 0 } }
-        .shell { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
 
-        .clock-section { text-align: center; padding: 28px 0 24px; opacity: 0; transform: translateY(8px); animation: fi .6s .05s ease-out forwards; }
-        .clock-time { font-family: var(--mono); font-size: 40px; font-weight: 200; color: var(--ink); letter-spacing: 2px; line-height: 1; font-variant-numeric: tabular-nums; }
-        .clock-sec { font-size: 20px; color: var(--muted); font-weight: 200; }
-        .clock-date { font-size: 13px; color: var(--muted); margin-top: 8px; letter-spacing: 3px; font-weight: 400; }
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(10,10,15,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 18px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface2);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: #8b6ffc; border-color: #8b6ffc; }
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border-color: rgba(239,68,68,0.3);
+        }
+        .btn-danger:hover { background: rgba(239,68,68,0.1); }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
 
-        .hero { background: var(--card); border-radius: 20px; padding: 28px 32px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02); border: 1px solid var(--border); opacity: 0; transform: translateY(12px); animation: fi .6s .1s ease-out forwards; }
-        .hero-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-        .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
-        .hero-pct { font-family: var(--mono); font-size: 13px; font-weight: 400; color: var(--accent); }
-        .hero-bar { position: relative; height: 28px; border-radius: 14px; background: #f0f0f2; overflow: hidden; }
-        .hero-fill { position: absolute; top: 0; left: 0; bottom: 0; border-radius: 14px; background: linear-gradient(90deg, #0071e3, #5ac8fa, #34c759, #ff9500); background-size: 400% 100%; animation: heroShimmer 6s linear infinite; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
-        @keyframes heroShimmer { 0% { background-position: 0% 0 } 100% { background-position: 400% 0 } }
-        .hero-fill::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 60px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3)); }
-        .hero-ends { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
-        .hero-glow { position: absolute; top: -2px; right: -2px; bottom: -2px; width: 8px; border-radius: 0 14px 14px 0; background: #fff; box-shadow: 0 0 12px 3px rgba(255,149,0,0.4); animation: glow 2s ease-in-out infinite; }
-        @keyframes glow { 0%,100% { opacity: 0.6 } 50% { opacity: 1 } }
+        /* Content */
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
 
-        .year-bar { background: var(--card); border-radius: 20px; padding: 20px 32px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02); border: 1px solid var(--border); opacity: 0; transform: translateY(12px); animation: fi .6s .15s ease-out forwards; }
-        .year-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .year-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
-        .year-pct { font-family: var(--mono); font-size: 12px; font-weight: 400; color: #8b5cf6; }
-        .year-track { position: relative; height: 28px; border-radius: 6px; background: #f0f0f2; overflow: visible; margin: 8px 0 4px; }
-        .year-fill { position: absolute; top: 0; left: 0; bottom: 0; border-radius: 6px; background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd); transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
-        .year-ruler { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
-        .year-tick { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,0.08); }
-        .year-tick-label { position: absolute; bottom: -16px; font-family: var(--mono); font-size: 8px; color: #aeaeb2; transform: translateX(-50%); letter-spacing: 0.5px; }
-        .year-ends { display: flex; justify-content: space-between; margin-top: 14px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+        }
+        .stat-card .num {
+            font-family: var(--mono);
+            font-size: 26px;
+            font-weight: 500;
+            color: var(--accent3);
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
 
-        .tw-section { background: var(--card); border-radius: 20px; padding: 24px 32px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02); border: 1px solid var(--border); opacity: 0; transform: translateY(12px); animation: fi .6s .2s ease-out forwards; }
-        .tw-line { font-family: var(--mono); font-size: 14px; font-weight: 300; line-height: 2; color: var(--ink); white-space: nowrap; overflow: hidden; min-height: 2em; }
-        .tw-cursor { display: inline-block; width: 2px; height: 1em; background: var(--accent); margin-left: 2px; vertical-align: text-bottom; animation: blink 1s step-end infinite; }
-        @keyframes blink { 50% { opacity: 0 } }
-        .tw-num { color: var(--accent); font-weight: 500; }
-        .tw-num2 { color: var(--accent2); font-weight: 500; }
-        .tw-num3 { color: #34c759; font-weight: 500; }
-        @keyframes fi { to { opacity: 1; transform: translateY(0); } }
+        /* Add form */
+        .add-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 28px;
+        }
+        .add-card h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .add-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .add-form .field {
+            flex: 1;
+            min-width: 140px;
+        }
+        .add-form .field label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .add-form input, .add-form select {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .add-form input:focus, .add-form select:focus {
+            border-color: var(--accent);
+        }
+        .add-form select { cursor: pointer; }
+        .add-form .btn-primary {
+            align-self: flex-end;
+            padding: 8px 22px;
+        }
 
-        .gauges { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .card { background: var(--card); border-radius: 20px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.02); border: 1px solid var(--border); opacity: 0; transform: translateY(12px); animation: fi .6s ease-out forwards; }
-        .card.d3 { animation-delay: .3s } .card.d4 { animation-delay: .4s } .card.d5 { animation-delay: .5s }
-        .card-tag { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-        .gauge-wrap { display: flex; align-items: center; gap: 24px; }
-        .gauge-svg { flex-shrink: 0; }
-        .gauge-info { flex: 1; }
-        .gauge-pct { font-family: var(--mono); font-size: 32px; font-weight: 200; color: var(--ink); line-height: 1; }
-        .gauge-pct small { font-size: 16px; color: var(--muted); }
-        .gauge-meta { margin-top: 10px; }
-        .gauge-meta-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 11px; }
-        .gauge-meta-row .gk { color: var(--muted); }
-        .gauge-meta-row .gv { font-family: var(--mono); font-weight: 400; color: var(--ink); }
+        /* Date list */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .list-header h2 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .list-header .count {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--muted);
+        }
 
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .d-col-title { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #8b5cf6; padding: 0 14px 6px; }
-        .d-col-title.career { color: #ff6b35; }
-        .d-col-title.remaining { color: #0071e3; }
-        .d-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border: 1px solid #f1f5f9; transition: background 0.2s; }
-        .d-item:hover { background: #f1f5f9; }
-        .d-key { font-size: 11px; color: #64748b; }
-        .d-val { font-family: var(--mono); font-size: 13px; font-weight: 400; color: var(--ink); }
+        .date-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: border-color 0.15s;
+        }
+        .date-card:hover { border-color: rgba(255,255,255,0.1); }
+        .date-card.today {
+            border-color: rgba(124,92,252,0.3);
+            background: linear-gradient(135deg, rgba(124,92,252,0.06), transparent);
+        }
+        .date-card.upcoming {
+            border-left: 3px solid var(--accent3);
+        }
+        .date-card.past {
+            opacity: 0.5;
+        }
+        .date-card.past:hover { opacity: 0.7; }
 
-        .footer { text-align: center; margin-top: 40px; font-size: 10px; color: #c7c7cc; letter-spacing: 2px; text-transform: uppercase; }
+        .date-card .day-badge {
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            background: var(--surface2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--mono);
+        }
+        .date-card .day-badge .month {
+            font-size: 10px;
+            color: var(--accent2);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            line-height: 1;
+        }
+        .date-card .day-badge .day {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.2;
+        }
 
-        @media (max-width: 640px) {
-            .gauges { grid-template-columns: 1fr; } .gauge-pct { font-size: 26px; }
-            .hero, .year-bar, .tw-section { padding: 20px; } .tw-line { font-size: 12px; }
-            .detail-grid { grid-template-columns: 1fr; }
+        .date-card .info {
+            flex: 1;
+            min-width: 0;
+        }
+        .date-card .info .name {
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .date-card .info .desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .date-card .info .category-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .tag-birthday { background: rgba(244,114,182,0.15); color: var(--accent2); }
+        .tag-anniversary { background: rgba(124,92,252,0.15); color: var(--accent); }
+        .tag-holiday { background: rgba(56,189,248,0.15); color: var(--accent3); }
+        .tag-other { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+        .date-card .meta-right {
+            flex-shrink: 0;
+            text-align: right;
+        }
+        .date-card .meta-right .countdown {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--accent3);
+        }
+        .date-card .meta-right .countdown.negative {
+            color: var(--danger);
+        }
+        .date-card .meta-right .delete-btn {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 11px;
+            color: var(--danger);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+        .date-card:hover .meta-right .delete-btn {
+            opacity: 0.6;
+        }
+        .date-card .meta-right .delete-btn:hover { opacity: 1 !important; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state .icon {
+            font-size: 36px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 14px;
+        }
+        .modal p {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 200;
+            pointer-events: none;
+        }
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--ink);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.25s ease;
+            pointer-events: auto;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* Search */
+        .search-bar {
+            margin-bottom: 18px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .search-bar input:focus {
+            border-color: var(--accent);
+        }
+        .search-bar input::placeholder {
+            color: var(--muted);
+        }
+
+        /* Category filter pills */
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+        .pill {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .pill:hover { border-color: rgba(255,255,255,0.15); }
+        .pill.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header { padding: 14px 16px; }
+            .container { padding: 20px 14px 60px; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .add-form .field { min-width: 100%; }
+            .date-card { flex-wrap: wrap; gap: 10px; }
+            .date-card .meta-right { width: 100%; text-align: left; display: flex; gap: 12px; align-items: center; }
+            .date-card .meta-right .delete-btn { opacity: 0.4; }
+            .modal { padding: 22px; }
         }
     </style>
 </head>
 <body>
-
-<div class="top-bar"><div class="top-bar-fill" id="top-bar-fill"></div></div>
-
-<div class="shell">
-    <div class="clock-section">
-        <div class="clock-time" id="clock-time">--:--<span class="clock-sec" id="clock-sec">--</span></div>
-        <div class="clock-date" id="clock-date">-------- -- ----</div>
-    </div>
-
-    <div class="hero">
-        <div class="hero-row">
-            <div class="hero-label">Life Progress</div>
-            <div class="hero-pct" id="hero-pct">--%</div>
+    <header class="header">
+        <span class="logo">KeyDates</span>
+        <div class="header-actions">
+            <button class="btn" onclick="exportData()">Export</button>
+            <label class="btn" style="cursor:pointer">
+                Import
+                <input type="file" accept=".json" style="display:none" onchange="importData(event)">
+            </label>
         </div>
-        <div class="hero-bar"><div class="hero-fill" id="hero-fill"><div class="hero-glow"></div></div></div>
-        <div class="hero-ends"><span id="hero-start"></span><span id="hero-end"></span></div>
-    </div>
+    </header>
 
-    <div class="year-bar">
-        <div class="year-row">
-            <div class="year-label">This Year</div>
-            <div class="year-pct" id="year-pct">--%</div>
-        </div>
-        <div class="year-track"><div class="year-fill" id="year-fill"></div><div class="year-ruler" id="year-ruler"></div></div>
-        <div class="year-ends"><span id="year-start">-----</span><span id="year-end">-----</span></div>
-    </div>
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-row" id="statsRow"></div>
 
-    <div class="tw-section"><div class="tw-line" id="tw-main"></div></div>
-
-    <div class="gauges">
-        <div class="card d3">
-            <div class="card-tag">Life</div>
-            <div class="gauge-wrap">
-                <svg class="gauge-svg" width="110" height="110" viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r="46" fill="none" stroke="#f0f0f2" stroke-width="8"/>
-                    <circle id="g-life" cx="55" cy="55" r="46" fill="none" stroke="url(#grad1)" stroke-width="8" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="289.03" transform="rotate(-90 55 55)" style="transition: stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)"/>
-                    <defs><linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0071e3"/><stop offset="100%" stop-color="#34c759"/></linearGradient></defs>
-                </svg>
-                <div class="gauge-info">
-                    <div class="gauge-pct"><span id="g-life-pct-val">--</span><small>%</small></div>
-                    <div class="gauge-meta">
-                        <div class="gauge-meta-row"><span class="gk">Lived</span><span class="gv" id="g-lived">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">Ahead</span><span class="gv" id="g-left">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">Total</span><span class="gv" id="g-total">--</span></div>
-                    </div>
+        <!-- Add card -->
+        <div class="add-card">
+            <h3>Add New Date</h3>
+            <form class="add-form" onsubmit="addDate(event)">
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" id="newName" placeholder="e.g. Alice Birthday" required>
                 </div>
-            </div>
-        </div>
-        <div class="card d4">
-            <div class="card-tag">Career</div>
-            <div class="gauge-wrap">
-                <svg class="gauge-svg" width="110" height="110" viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r="46" fill="none" stroke="#f0f0f2" stroke-width="8"/>
-                    <circle id="g-career" cx="55" cy="55" r="46" fill="none" stroke="url(#grad2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="289.03" transform="rotate(-90 55 55)" style="transition: stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1)"/>
-                    <defs><linearGradient id="grad2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ff6b35"/><stop offset="100%" stop-color="#ff9500"/></linearGradient></defs>
-                </svg>
-                <div class="gauge-info">
-                    <div class="gauge-pct"><span id="g-career-pct-val">--</span><small>%</small></div>
-                    <div class="gauge-meta">
-                        <div class="gauge-meta-row"><span class="gk">Worked</span><span class="gv" id="g-worked">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">Until Retire</span><span class="gv" id="g-toretire">--</span></div>
-                        <div class="gauge-meta-row"><span class="gk">Total</span><span class="gv" id="g-career-total">--</span></div>
-                    </div>
+                <div class="field">
+                    <label>Date</label>
+                    <input type="date" id="newDate" required>
                 </div>
+                <div class="field" style="min-width:100px">
+                    <label>Category</label>
+                    <select id="newCategory">
+                        <option value="birthday">Birthday</option>
+                        <option value="anniversary">Anniversary</option>
+                        <option value="holiday">Holiday</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Add</button>
+            </form>
+        </div>
+
+        <!-- Search / filter -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search dates..." oninput="render()">
+        </div>
+        <div class="filter-pills" id="filterPills"></div>
+
+        <!-- Date list -->
+        <div class="list-header">
+            <h2>All Dates</h2>
+            <span class="count" id="dateCount"></span>
+        </div>
+        <div id="dateList"></div>
+    </div>
+
+    <!-- Confirm modal -->
+    <div class="modal-overlay" id="confirmOverlay">
+        <div class="modal">
+            <h3 id="confirmTitle">Confirm</h3>
+            <p id="confirmText">Are you sure?</p>
+            <div class="modal-actions">
+                <button class="btn" onclick="closeConfirm()">Cancel</button>
+                <button class="btn btn-danger" id="confirmBtn" onclick="confirmAction()">Delete</button>
             </div>
         </div>
     </div>
 
-    <div class="card d5">
-        <div class="card-tag">Details</div>
-        <div class="detail-grid">
-            <div class="d-col"><div class="d-col-title">Lived</div>
-                <div class="d-item"><span class="d-key">Hours</span><span class="d-val" id="d-hours">--</span></div>
-                <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="d-days">--</span></div>
-                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-months">--</span></div>
-                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-years">--</span></div>
-            </div>
-            <div class="d-col"><div class="d-col-title remaining">Ahead</div>
-                <div class="d-item"><span class="d-key">Hours</span><span class="d-val" id="d-hours-left">--</span></div>
-                <div class="d-item"><span class="d-key">Days</span><span class="d-val" id="d-days-left">--</span></div>
-                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-months-left">--</span></div>
-                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-years-left">--</span></div>
-            </div>
-            <div class="d-col"><div class="d-col-title career">Career</div>
-                <div class="d-item"><span class="d-key">Months</span><span class="d-val" id="d-worked-m">--</span></div>
-                <div class="d-item"><span class="d-key">Years</span><span class="d-val" id="d-worked-y">--</span></div>
-                <div class="d-item"><span class="d-key">Months Left</span><span class="d-val" id="d-retire-m">--</span></div>
-                <div class="d-item"><span class="d-key">Years Left</span><span class="d-val" id="d-retire-y">--</span></div>
-            </div>
-        </div>
-    </div>
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
 
+    <script>
+        /* ── Data ── */
+        const STORAGE_KEY = 'keydates_data';
+        let dates = [];
 
-</div>
-
-<script>
-(function() {
-    'use strict';
-
-    // ── Date components (math-split obfuscation) ──
-    function _s(a, b) { return a + b; }
-    function _n(a, b) { return a - b; }
-    var _by = _s(666, 1325);    var _bm = _n(12, 8);      var _bd = _n(18, 2);
-    var _wy = _s(888, 1131);    var _wm = _n(16, 9);      var _wd = _n(9, 8);
-    var _ry = _s(1688, 366);    var _rm = _n(12, 8);      var _rd = _n(18, 17);
-    var _ly = _n(99, 9);
-    var BIRTH = new Date(_by, _bm - 1, _bd);
-    var WORK_START = new Date(_wy, _wm - 1, _wd);
-    var RETIRE = new Date(_ry, _rm - 1, _rd);
-    var LIFE_YEARS = _ly;
-    var LIFE_END = new Date(BIRTH.getFullYear() + LIFE_YEARS, BIRTH.getMonth(), BIRTH.getDate());
-    var LIFE_DAYS = Math.round((LIFE_END - BIRTH) / 86400000);
-    var CAREER_DAYS = Math.round((RETIRE - WORK_START) / 86400000);
-    var CIRC = 2 * Math.PI * 46;
-
-    var $ = function(id) { return document.getElementById(id); };
-    function fmt(n) { return n.toLocaleString('en-US'); }
-
-    // ── DOM refs (cached) ──
-    var elClockTime = $('clock-time');
-    var elClockSec = $('clock-sec');
-    var elClockDate = $('clock-date');
-    var elHeroFill = $('hero-fill');
-    var elHeroPct = $('hero-pct');
-    var elHeroStart = $('hero-start');
-    var elHeroEnd = $('hero-end');
-    var elTopBar = $('top-bar-fill');
-    var elYearFill = $('year-fill');
-    var elYearPct = $('year-pct');
-    var elYearStart = $('year-start');
-    var elYearEnd = $('year-end');
-    var elYearRuler = $('year-ruler');
-    var elGLife = $('g-life');
-    var elGLifePct = $('g-life-pct-val');
-    var elGLived = $('g-lived');
-    var elGLeft = $('g-left');
-    var elGTotal = $('g-total');
-    var elGCareer = $('g-career');
-    var elGCareerPct = $('g-career-pct-val');
-    var elGWorked = $('g-worked');
-    var elGToretire = $('g-toretire');
-    var elGCareerTotal = $('g-career-total');
-    var elTwMain = $('tw-main');
-
-    var DAYS_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    var MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    var MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-    function beijingNow() {
-        var now = new Date();
-        var utc = now.getTime() + now.getTimezoneOffset() * 60000;
-        return new Date(utc + 8 * 3600000);
-    }
-    function daysSince(date) {
-        var bj = beijingNow();
-        var bjToday = new Date(bj.getFullYear(), bj.getMonth(), bj.getDate());
-        return Math.floor((bjToday - date) / 86400000);
-    }
-    function daysUntil(date) {
-        var bj = beijingNow();
-        var bjToday = new Date(bj.getFullYear(), bj.getMonth(), bj.getDate());
-        var diff = Math.ceil((date - bjToday) / 86400000);
-        return diff > 0 ? diff : 0;
-    }
-
-    // ── Tick ──
-    var lastYear = null;
-    function tick() {
-        var now = Date.now();
-        var lived = now - BIRTH.getTime();
-        var left = Math.max(0, LIFE_END.getTime() - now);
-        var worked = Math.max(0, now - WORK_START.getTime());
-        var toRetire = Math.max(0, RETIRE.getTime() - now);
-        var livedDays = Math.floor(lived / 86400000);
-        var leftDays = Math.ceil(left / 86400000);
-        var workedDays = Math.floor(worked / 86400000);
-        var retireDays = Math.ceil(toRetire / 86400000);
-        var lifePct = Math.min(100, lived / (LIFE_END.getTime() - BIRTH.getTime()) * 100);
-        var careerPct = Math.min(100, Math.max(0, worked / (RETIRE.getTime() - WORK_START.getTime()) * 100));
-
-        // Clock — textContent only
-        var dNow = new Date();
-        var h = String(dNow.getHours()).padStart(2, '0');
-        var m = String(dNow.getMinutes()).padStart(2, '0');
-        var s = String(dNow.getSeconds()).padStart(2, '0');
-        elClockTime.firstChild.textContent = h + ':' + m + ':';
-        elClockSec.textContent = s;
-        elClockDate.textContent = DAYS_FULL[dNow.getDay()] + ', ' + MONTHS_FULL[dNow.getMonth()] + ' ' + dNow.getDate() + ', ' + dNow.getFullYear();
-
-        // Hero
-        elHeroFill.style.width = lifePct.toFixed(2) + '%';
-        elHeroPct.textContent = lifePct.toFixed(2) + '%';
-        elHeroStart.textContent = BIRTH.getFullYear();
-        elHeroEnd.textContent = LIFE_END.getFullYear();
-        elTopBar.style.width = lifePct.toFixed(2) + '%';
-
-        // Year progress
-        var yearStart = new Date(dNow.getFullYear(), 0, 1);
-        var yearEnd = new Date(dNow.getFullYear() + 1, 0, 1);
-        var yearPct = Math.min(100, (now - yearStart.getTime()) / (yearEnd.getTime() - yearStart.getTime()) * 100);
-        elYearFill.style.width = yearPct.toFixed(2) + '%';
-        elYearPct.textContent = yearPct.toFixed(2) + '%';
-        elYearStart.textContent = dNow.getFullYear();
-        elYearEnd.textContent = dNow.getFullYear() + 1;
-
-        // Year ruler ticks (once per year)
-        if (lastYear !== dNow.getFullYear()) {
-            lastYear = dNow.getFullYear();
-            var frag = document.createDocumentFragment();
-            var isLeap = new Date(dNow.getFullYear(), 1, 29).getMonth() === 1;
-            var yearDays = isLeap ? 366 : 365;
-            for (var mi = 0; mi < 12; mi++) {
-                var dayOfYear = Math.round((new Date(dNow.getFullYear(), mi, 1) - yearStart) / 86400000);
-                var pct = (dayOfYear / yearDays) * 100;
-                var tick = document.createElement('div');
-                tick.className = 'year-tick';
-                tick.style.left = pct + '%';
-                frag.appendChild(tick);
-                if (mi > 0) {
-                    var label = document.createElement('div');
-                    label.className = 'year-tick-label';
-                    label.style.left = pct + '%';
-                    label.textContent = MONTHS_SHORT[mi];
-                    frag.appendChild(label);
-                }
+        // Load
+        function loadData() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) dates = JSON.parse(raw);
+            } catch(e) { dates = []; }
+            // Prefill with defaults if empty
+            if (dates.length === 0) {
+                const today = new Date();
+                const y = today.getFullYear();
+                dates = [
+                    { id: 'd1', name: 'New Year', date: `${y}-01-01`, category: 'holiday' },
+                    { id: 'd2', name: 'Christmas', date: `${y}-12-25`, category: 'holiday' },
+                ];
+                saveData();
             }
-            elYearRuler.innerHTML = '';
-            elYearRuler.appendChild(frag);
+        }
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dates));
         }
 
-        // Life gauge — textContent only
-        elGLife.style.strokeDashoffset = CIRC * (1 - lifePct / 100);
-        elGLifePct.textContent = lifePct.toFixed(2);
-        elGLived.textContent = fmt(livedDays);
-        elGLeft.textContent = fmt(leftDays);
-        elGTotal.textContent = fmt(LIFE_DAYS);
+        /* ── Helpers ── */
+        function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+        function pad2(n) { return String(n).padStart(2, '0'); }
 
-        // Career gauge — textContent only
-        elGCareer.style.strokeDashoffset = CIRC * (1 - careerPct / 100);
-        elGCareerPct.textContent = careerPct.toFixed(2);
-        elGWorked.textContent = fmt(workedDays);
-        elGToretire.textContent = fmt(retireDays);
-        elGCareerTotal.textContent = fmt(CAREER_DAYS);
-
-        // Details — textContent only
-        $('d-hours').textContent = fmt(Math.floor(lived / 3600000));
-        $('d-days').textContent = fmt(livedDays);
-        $('d-months').textContent = fmt(Math.floor(livedDays / 30.44));
-        $('d-years').textContent = (livedDays / 365.25).toFixed(2);
-        $('d-hours-left').textContent = fmt(Math.floor(left / 3600000));
-        $('d-days-left').textContent = fmt(leftDays);
-        $('d-months-left').textContent = fmt(Math.ceil(leftDays / 30.44));
-        $('d-years-left').textContent = (leftDays / 365.25).toFixed(2);
-        var workedMonths = Math.floor(workedDays / 30.44);
-        $('d-worked-m').textContent = fmt(workedMonths);
-        $('d-worked-y').textContent = (workedDays / 365.25).toFixed(2);
-        $('d-retire-m').textContent = fmt(Math.ceil(retireDays / 30.44));
-        $('d-retire-y').textContent = (retireDays / 365.25).toFixed(2);
-    }
-
-    tick();
-    var timer = setInterval(tick, 1000);
-
-    // ── Visibility pause ──
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) { clearInterval(timer); timer = null; }
-        else { tick(); timer = setInterval(tick, 1000); }
-    });
-    window.addEventListener('beforeunload', function() { clearInterval(timer); });
-
-    // ── Typewriter (with HTML escape) ──
-    function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-    var TW_LINES = [
-        { getText: function() { return fmt(daysSince(BIRTH)) + ' days in the world.'; }, cls: 'tw-num' },
-        { getText: function() { return fmt(daysSince(WORK_START)) + ' days at work.'; }, cls: 'tw-num2' },
-        { getText: function() { return fmt(daysUntil(RETIRE)) + ' days until the calendar is mine.'; }, cls: 'tw-num3' }
-    ];
-
-    function highlightNums(str, cls) {
-        return escapeHtml(str).replace(/([\d,]+)/g, '<span class="' + cls + '">$1</span>');
-    }
-
-    var twPaused = false;
-    document.addEventListener('visibilitychange', function() { twPaused = document.hidden; });
-
-    function typeErase(el, text, cls, cb) {
-        var i = 0, displayed = '';
-        function type() {
-            if (twPaused) { setTimeout(type, 100); return; }
-            if (i >= text.length) { setTimeout(erase, 2200); return; }
-            displayed += text[i];
-            el.innerHTML = highlightNums(displayed, cls) + '<span class="tw-cursor"></span>';
-            i++;
-            setTimeout(type, 25 + Math.random() * 35);
+        function parseDate(str) {
+            const parts = str.split('-');
+            return { year: parseInt(parts[0]), month: parseInt(parts[1]), day: parseInt(parts[2]) };
         }
-        function erase() {
-            if (twPaused) { setTimeout(erase, 100); return; }
-            if (displayed.length === 0) { if (cb) cb(); return; }
-            displayed = displayed.slice(0, -1);
-            el.innerHTML = highlightNums(displayed, cls) + '<span class="tw-cursor"></span>';
-            setTimeout(erase, 12);
+
+        function daysBetween(a, b) {
+            const ms = b.getTime() - a.getTime();
+            return Math.round(ms / 86400000);
         }
-        type();
-    }
 
-    function runCycle(idx) {
-        var line = TW_LINES[idx % TW_LINES.length];
-        typeErase(elTwMain, '> ' + line.getText(), line.cls, function() { runCycle(idx + 1); });
-    }
-    setTimeout(function() { runCycle(0); }, 800);
-})();
-</script>
+        // Get next occurrence of (month, day) from today
+        function nextOccurrence(month, day, today) {
+            const y = today.getFullYear();
+            let d = new Date(y, month - 1, day);
+            if (d < today) d = new Date(y + 1, month - 1, day);
+            return d;
+        }
 
+        function formatDateShort(dateStr) {
+            const p = parseDate(dateStr);
+            const d = new Date(p.year, p.month - 1, p.day);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function formatCountdown(days) {
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Tomorrow';
+            if (days < 0) return `${Math.abs(days)}d ago`;
+            return `${days}d left`;
+        }
+
+        /* ── Render ── */
+        function render() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const activePill = document.querySelector('.pill.active');
+            const catFilter = activePill ? activePill.dataset.cat : 'all';
+
+            // Compute stats
+            let total = dates.length;
+            let upcoming = 0;
+            let birthdays = 0;
+            let countdownMin = Infinity;
+            let nextDateName = '';
+
+            // Annotate each date
+            const annotated = dates.map(d => {
+                const p = parseDate(d.date);
+                const next = nextOccurrence(p.month, p.day, today);
+                const diff = daysBetween(today, next);
+                const isToday = diff === 0;
+                const isPast = diff < 0;
+                const cat = d.category || 'other';
+                return { ...d, _next: next, _diff: diff, _isToday: isToday, _isPast: isPast, _cat: cat };
+            });
+
+            // Stats
+            const future = annotated.filter(d => d._diff >= 0 && d._diff <= 30);
+            upcoming = future.length;
+            birthdays = annotated.filter(d => d._cat === 'birthday').length;
+
+            const closest = annotated.filter(d => d._diff >= 0).sort((a,b) => a._diff - b._diff);
+            if (closest.length > 0) {
+                countdownMin = closest[0]._diff;
+                nextDateName = closest[0].name;
+            }
+
+            // Filter
+            let filtered = annotated;
+            if (search) {
+                filtered = filtered.filter(d => d.name.toLowerCase().includes(search));
+            }
+            if (catFilter !== 'all') {
+                filtered = filtered.filter(d => d._cat === catFilter);
+            }
+
+            // Sort: upcoming first, then by days
+            filtered.sort((a, b) => {
+                if (a._isToday && !b._isToday) return -1;
+                if (!a._isToday && b._isToday) return 1;
+                return a._diff - b._diff;
+            });
+
+            // Stats row
+            document.getElementById('statsRow').innerHTML = `
+                <div class="stat-card"><div class="num">${total}</div><div class="label">Total Dates</div></div>
+                <div class="stat-card"><div class="num">${upcoming}</div><div class="label">Upcoming ≤30d</div></div>
+                <div class="stat-card"><div class="num">${birthdays}</div><div class="label">Birthdays</div></div>
+                <div class="stat-card"><div class="num">${countdownMin < Infinity ? countdownMin : '-'}</div><div class="label">Days Until Next</div></div>
+            `;
+
+            // Filter pills
+            const cats = ['all', 'birthday', 'anniversary', 'holiday', 'other'];
+            const catLabels = { all: 'All', birthday: 'Birthday', anniversary: 'Anniversary', holiday: 'Holiday', other: 'Other' };
+            document.getElementById('filterPills').innerHTML = cats.map(c =>
+                `<button class="pill${c === catFilter ? ' active' : ''}" data-cat="${c}" onclick="setFilter(this)">${catLabels[c]}</button>`
+            ).join('');
+
+            // Count
+            document.getElementById('dateCount').textContent = `${filtered.length} of ${total}`;
+
+            // List
+            const list = document.getElementById('dateList');
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="empty-state"><div class="icon">* * *</div><p>No dates found</p></div>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map(d => {
+                const cls = d._isToday ? 'today' : (d._diff >= 0 ? 'upcoming' : 'past');
+                const p = parseDate(d.date);
+                const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                const tagClass = `tag-${d._cat}`;
+                const countdownClass = d._diff < 0 ? 'negative' : '';
+                const cntStr = formatCountdown(d._diff);
+                return `
+                    <div class="date-card ${cls}">
+                        <div class="day-badge">
+                            <span class="month">${monthNames[p.month - 1]}</span>
+                            <span class="day">${p.day}</span>
+                        </div>
+                        <div class="info">
+                            <div class="name">${escHtml(d.name)}</div>
+                            <div class="desc">${formatDateShort(d.date)}</div>
+                            <span class="category-tag ${tagClass}">${catLabels[d._cat]}</span>
+                        </div>
+                        <div class="meta-right">
+                            <div class="countdown ${countdownClass}">${cntStr}</div>
+                            <button class="delete-btn" onclick="promptDelete('${d.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function escHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        /* ── Actions ── */
+        function addDate(e) {
+            e.preventDefault();
+            const name = document.getElementById('newName').value.trim();
+            const dateVal = document.getElementById('newDate').value;
+            const category = document.getElementById('newCategory').value;
+            if (!name || !dateVal) return;
+            dates.push({ id: genId(), name, date: dateVal, category });
+            saveData();
+            document.getElementById('newName').value = '';
+            document.getElementById('newDate').value = '';
+            render();
+            showToast('Date added');
+        }
+
+        let pendingDeleteId = null;
+        function promptDelete(id) {
+            pendingDeleteId = id;
+            document.getElementById('confirmTitle').textContent = 'Delete Date';
+            const d = dates.find(x => x.id === id);
+            document.getElementById('confirmText').textContent = `Delete "${d ? d.name : 'this date'}"? This cannot be undone.`;
+            document.getElementById('confirmBtn').textContent = 'Delete';
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function confirmAction() {
+            if (pendingDeleteId) {
+                dates = dates.filter(d => d.id !== pendingDeleteId);
+                saveData();
+                render();
+                showToast('Date deleted');
+            }
+            closeConfirm();
+        }
+
+        function closeConfirm() {
+            pendingDeleteId = null;
+            document.getElementById('confirmOverlay').classList.remove('active');
+        }
+
+        function setFilter(el) {
+            document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            render();
+        }
+
+        /* ── Export / Import ── */
+        function exportData() {
+            const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), dates })], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `keydates-export-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Exported');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.dates && Array.isArray(data.dates)) {
+                        // Merge: keep existing, add new ones (dedup by id)
+                        const existingIds = new Set(dates.map(d => d.id));
+                        const added = [];
+                        for (const nd of data.dates) {
+                            if (nd.id && nd.name && nd.date) {
+                                if (!existingIds.has(nd.id)) {
+                                    dates.push(nd);
+                                    existingIds.add(nd.id);
+                                    added.push(nd.name);
+                                }
+                            }
+                        }
+                        saveData();
+                        render();
+                        showToast(added.length > 0 ? `Imported ${added.length} dates` : 'No new dates to import');
+                    }
+                } catch(e) {
+                    showToast('Invalid file');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        /* ── Toast ── */
+        function showToast(msg) {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            c.appendChild(t);
+            requestAnimationFrame(() => t.classList.add('show'));
+            setTimeout(() => {
+                t.classList.remove('show');
+                setTimeout(() => t.remove(), 300);
+            }, 2000);
+        }
+
+        /* ── Init ── */
+        loadData();
+        render();
+
+        // Close modal on overlay click
+        document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirm();
+        });
+    </script>
 </body>
 </html>
