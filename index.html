@@ -123,13 +123,11 @@
         /* ── Left: Countdown Cards ── */
         .left-panel {
             flex: 1;
-            min-width: 260px;
+            min-width: 240px;
             max-width: 380px;
             display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 10px;
-            align-content: flex-start;
         }
         .cd-card {
             background: var(--card-bg);
@@ -137,10 +135,9 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: var(--card-radius);
-            padding: 12px 16px;
+            padding: 14px 18px;
             transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
-            flex: 1;
-            min-width: 100px;
+            width: 100%;
         }
         .cd-card:hover {
             transform: translateY(-3px) scale(1.01);
@@ -159,7 +156,7 @@
 
         .cd-card .cd-count {
             font-family: var(--mono);
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 300;
             line-height: 1.3;
         }
